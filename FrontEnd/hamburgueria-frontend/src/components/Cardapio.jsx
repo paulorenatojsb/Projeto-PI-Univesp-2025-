@@ -23,7 +23,7 @@ const Cardapio = () => {
         const ordemCategorias = [
           'PORÇOES',
           'CLASSICOS DE CARNE',
-          'CLASSICOS DE RÚCULA',
+          'CLASSICOS DE RUCULA',
           'CLASSICOS DE PICANHA',
           'CLASSICOS DE COSTELA',
           'CLASSICOS DE FRANGO',

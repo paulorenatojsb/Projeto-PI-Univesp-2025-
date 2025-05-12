@@ -8,20 +8,23 @@ const NovoPedido = () => {
   const [mesa, setMesa] = useState('');
   const [pedido, setPedido] = useState([]);
   const [mensagem, setMensagem] = useState('');
+  const [retirada, setRetirada] = useState(false);
+  const [nomeCliente, setNomeCliente] = useState('');
+  const [observacoes, setObservacoes] = useState('');
 
   const baseURL = 'http://localhost:8000';
 
   const categoriasOrdenadas = [
     'PORÇOES',
     'CLASSICOS DE CARNE',
-    'CLASSICOS DE RÚCULA',
+    'CLASSICOS DE RUCULA',
     'CLASSICOS DE PICANHA',
     'CLASSICOS DE COSTELA',
     'CLASSICOS DE FRANGO',
     'CLASSICOS DE CALABRESA',
     'CLASSICOS RECHEADOS',
-    'ESPECIAIS',
     'SEM CARNE',
+    'ESPECIAIS',
     'EXTRAS',
     'BEBIDAS',
     'CERVEJA',
@@ -75,20 +78,27 @@ const NovoPedido = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post(`${baseURL}/api/pedidos/`, {
-        mesa,
-        itens: pedido,
-      });
-      setMensagem('Pedido criado com sucesso!');
-      setMesa('');
-      setPedido([]);
-    } catch (error) {
-      setMensagem('Erro ao criar pedido.');
-      console.error(error);
-    }
-  };
+  e.preventDefault();
+  try {
+    const payload = retirada
+      ? { retirada: true, nomeCliente, observacoes, itens: pedido }
+      : { mesa, observacoes, itens: pedido };
+
+    console.log('Payload enviado:', payload); // Log para verificar o payload
+
+    await axios.post(`${baseURL}/api/pedidos/`, payload);
+
+    setMensagem('Pedido criado com sucesso!');
+    setMesa('');
+    setPedido([]);
+    setRetirada(false);
+    setNomeCliente('');
+    setObservacoes('');
+  } catch (error) {
+    setMensagem('Erro ao criar pedido.');
+    console.error('Erro ao enviar pedido:', error);
+  }
+};
 
   const itensOrdenados = categoriasOrdenadas.flatMap((categoria) =>
     menuItems.filter((item) => item.categoria === categoria)
@@ -98,22 +108,44 @@ const NovoPedido = () => {
     <div className="novo-pedido-container">
       <h2>Criar Novo Pedido</h2>
 
-      <div className="mesa-container">
-        <label htmlFor="mesa">Selecione a Mesa:</label>
-        <select
-          id="mesa"
-          value={mesa}
-          onChange={(e) => setMesa(e.target.value)}
-          required
-        >
-          <option value="">Selecione uma mesa</option>
-          {mesas.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.nome}
-            </option>
-          ))}
-        </select>
+      <div className="retirada-container">
+        <label className="retirada-label">
+          <input
+            type="checkbox"
+            checked={retirada}
+            onChange={(e) => setRetirada(e.target.checked)}
+          />
+          <span>Retirada</span>
+        </label>
+        {retirada && (
+          <input
+            type="text"
+            placeholder="Nome do Cliente"
+            value={nomeCliente}
+            onChange={(e) => setNomeCliente(e.target.value)}
+            required
+          />
+        )}
       </div>
+
+      {!retirada && (
+        <div className="mesa-container">
+          <label htmlFor="mesa">Selecione a Mesa:</label>
+          <select
+            id="mesa"
+            value={mesa}
+            onChange={(e) => setMesa(e.target.value)}
+            required
+          >
+            <option value="">Selecione uma mesa</option>
+            {mesas.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.nome}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="cardapio-container">
         <h3>Selecione Itens:</h3>
@@ -151,6 +183,16 @@ const NovoPedido = () => {
             </div>
           );
         })}
+      </div>
+
+      <div className="observacoes-container">
+        <label htmlFor="observacoes">Observações:</label>
+        <textarea
+          id="observacoes"
+          value={observacoes}
+          onChange={(e) => setObservacoes(e.target.value)}
+          placeholder="Digite observações adicionais para o pedido"
+        />
       </div>
 
       <button type="submit" className="enviar-btn" onClick={handleSubmit}>

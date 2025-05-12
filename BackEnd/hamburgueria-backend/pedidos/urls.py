@@ -1,10 +1,6 @@
-from rest_framework.routers import DefaultRouter
-from .views import PedidoViewSet
-from django.urls import path, include
-
-router = DefaultRouter()
-router.register(r'', PedidoViewSet)
+from django.urls import path
+from .views import PedidoAPIView
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', PedidoAPIView.as_view(), name='pedido-api'),  # Define o endpoint base
 ]

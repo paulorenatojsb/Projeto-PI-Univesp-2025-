@@ -64,3 +64,39 @@
   font-weight: bold;
   color: green;
 }
+
+.retirada-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espaçamento entre o checkbox e o campo de texto */
+}
+
+.retirada-label {
+  display: flex; /* Alinha o checkbox e o texto horizontalmente */
+  align-items: center;
+  gap: 5px; /* Espaçamento entre o checkbox e o texto "Retirada" */
+}
+
+.retirada-label input {
+  margin: 0; /* Remove margens padrão do checkbox */
+}
+
+.observacoes-container {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.observacoes-container label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.observacoes-container textarea {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: none;
+}
