@@ -1,7 +1,9 @@
+import uuid
 from django.db import models
 from menu.models import MenuItem
 
 class Pedido(models.Model):
+    pedido_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)  # Gera um ID único
     retirada = models.BooleanField(default=False)
     nome_cliente = models.CharField(max_length=255, blank=True, null=True)
     mesa = models.IntegerField(blank=True, null=True)

@@ -78,27 +78,44 @@ const NovoPedido = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const payload = retirada
-      ? { retirada: true, nomeCliente, observacoes, itens: pedido }
-      : { mesa, observacoes, itens: pedido };
+    e.preventDefault();
 
-    console.log('Payload enviado:', payload); // Log para verificar o payload
+    // Validação básica
+    if (!retirada && !mesa) {
+      setMensagem('Por favor, selecione uma mesa ou marque a opção de retirada.');
+      return;
+    }
 
-    await axios.post(`${baseURL}/api/pedidos/`, payload);
+    if (retirada && !nomeCliente) {
+      setMensagem('Por favor, insira o nome do cliente para retirada.');
+      return;
+    }
 
-    setMensagem('Pedido criado com sucesso!');
-    setMesa('');
-    setPedido([]);
-    setRetirada(false);
-    setNomeCliente('');
-    setObservacoes('');
-  } catch (error) {
-    setMensagem('Erro ao criar pedido.');
-    console.error('Erro ao enviar pedido:', error);
-  }
-};
+    if (pedido.length === 0) {
+      setMensagem('Por favor, adicione pelo menos um item ao pedido.');
+      return;
+    }
+
+    try {
+      const payload = retirada
+        ? { retirada: true, nome_cliente: nomeCliente, observacoes, itens: pedido }
+        : { mesa, observacoes, itens: pedido };
+
+      console.log('Payload enviado:', payload);
+
+      const response = await axios.post(`${baseURL}/api/pedidos/`, payload);
+
+      setMensagem(`Pedido criado com sucesso! ID do Pedido: ${response.data.pedido_id}`);
+      setMesa('');
+      setPedido([]);
+      setRetirada(false);
+      setNomeCliente('');
+      setObservacoes('');
+    } catch (error) {
+      setMensagem('Erro ao criar pedido.');
+      console.error('Erro ao enviar pedido:', error);
+    }
+  };
 
   const itensOrdenados = categoriasOrdenadas.flatMap((categoria) =>
     menuItems.filter((item) => item.categoria === categoria)
