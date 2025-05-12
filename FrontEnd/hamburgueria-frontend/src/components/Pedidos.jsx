@@ -1,48 +1,51 @@
 import React, { useEffect, useState } from 'react';
-import api from '../services/api';
-import './Pedidos.css';
+import api from '../services/api_reversa';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import '../estilos/pedidos.css'
+
+
 
 const Pedidos = () => {
   const [pedidos, setPedidos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState('');
 
   useEffect(() => {
-    api.get('/pedidos/')
+    api.get('/pedidos') // Altere para a rota real
       .then(response => {
+        console.log(response.data);
         setPedidos(response.data);
-        setErro('');
       })
       .catch(error => {
         console.error('Erro ao buscar pedidos:', error);
-        setErro('Erro ao carregar pedidos.');
-      })
-      .finally(() => {
-        setLoading(false);
       });
   }, []);
 
+  const formatarDataHora = (dataHoraString) => {
+    if (!dataHoraString) {
+      return '';
+    }
+    try {
+      const dataHora = new Date(dataHoraString);
+      return format(dataHora, 'dd/MM/yyyy HH:mm', { locale: ptBR });
+    } catch (error) {
+      console.error('Erro ao formatar data:', error);
+      return dataHoraString; // Retorna a string original em caso de erro
+    }
+  };
+
   return (
-    <div className="pedidos-container">
-      <h2 className="titulo">📋 Pedidos em Andamento</h2>
-
-      {loading && <p className="loading">Carregando pedidos...</p>}
-      {erro && <p className="erro">{erro}</p>}
-
-      <div className="grid-pedidos">
+    <div>
+       
+    
+    <br></br>
+      <h2 style={{ textAlign: 'center' }}>Pedidos Recebidos</h2><br></br>
+      <ul>
         {pedidos.map(pedido => (
-          <div key={pedido.id} className="pedido-card">
-            <h3>Mesa {pedido.mesa}</h3>
-            <ul>
-              {pedido.itens.map((item, index) => (
-                <li key={index}>{item.nome} x{item.quantidade}</li>
-              ))}
-            </ul>
-            <p>Status: <strong>{pedido.status}</strong></p>
-            <p><small>{new Date(pedido.criado_em).toLocaleString()}</small></p>
-          </div>
+          <li key={pedido.id} className='Mesas' ><br></br>
+            Numero da mesa: {pedido.id_mesa.idMesa}.<br></br>Horas de ocupação: {pedido.horas_ocupacao} horas.<br></br>Hora marcada: {formatarDataHora(pedido.horadia_marcada)}.
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 };
